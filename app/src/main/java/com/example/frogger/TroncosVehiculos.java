@@ -114,7 +114,7 @@ public class TroncosVehiculos extends Thread {
                                 view.posicionRanaX <= view.vehiculoX1 + view.vehiculoB1.getWidth() &&
                                 view.posicionRanaY >= view.vehiculoY1 &&
                                 view.posicionRanaY <= view.vehiculoY1 + view.vehiculoB1.getHeight()) {
-                            view.pierdeVida();
+                            view.muerto = true;
                         }
 
                         if (view.vehiculoX1 == view.tamanoX) {
@@ -145,7 +145,7 @@ public class TroncosVehiculos extends Thread {
                                 view.posicionRanaX <= view.vehiculoX2 + view.vehiculoB2.getWidth() &&
                                 view.posicionRanaY >= view.vehiculoY2 &&
                                 view.posicionRanaY <= view.vehiculoY2 + view.vehiculoB2.getHeight()) {
-                            view.pierdeVida();
+                            view.muerto = true;
                         }
 
                         if (view.vehiculoX2 + view.vehiculoB2.getWidth() < 0) {
@@ -174,7 +174,7 @@ public class TroncosVehiculos extends Thread {
                                 view.posicionRanaX <= view.vehiculoX3 + view.vehiculoB3.getWidth() &&
                                 view.posicionRanaY >= view.vehiculoY3 &&
                                 view.posicionRanaY <= view.vehiculoY3 + view.vehiculoB3.getHeight()) {
-                            view.pierdeVida();
+                            view.muerto = true;
                         }
 
                         if (view.vehiculoX3 == view.tamanoX) {

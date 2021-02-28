@@ -22,7 +22,7 @@ public class TiempoThread extends Thread {
             try {
                 view.limit--;
                 if (view.limit == 0) {
-                    view.pierdeVida();
+                    view.muerto = true;
                 }
                 sleep(1000);
             } catch (Exception e) {

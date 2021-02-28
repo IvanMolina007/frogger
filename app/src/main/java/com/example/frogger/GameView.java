@@ -20,13 +20,14 @@ import com.example.frogger.restart.ReiniciarActivity;
 public class GameView extends SurfaceView {
 
     public MainActivity main;
+    public boolean muerto = false;
     int tamanoX, tamanoY, posicionRanaX, posicionRanaY;
     public int vidas = 2, troncoX1, troncoX2, troncoX3,
             vehiculoX1, vehiculoX2, vehiculoX3, aleatorio,
             troncoY1, troncoY2, troncoY3, vehiculoY1, vehiculoY2, vehiculoY3;
     public GameLoopThread gameLoopThread;
     private SurfaceHolder holder;
-    private Bitmap agua, cesped, carretera;
+    private Bitmap agua, cesped, carretera, muerte;
     public Bitmap nenufar, rana, troncoB1, troncoB2, troncoB3, troncoLargo, troncoCorto, troncoMedio,
             vehiculoB1, vehiculoB2, vehiculoB3, camion, fragoneta, coche, camionIz, fragonetaIz, cocheIz;
 
@@ -53,6 +54,7 @@ public class GameView extends SurfaceView {
         cesped = BitmapFactory.decodeResource(getResources(), R.drawable.cespedjuego);
         carretera = BitmapFactory.decodeResource(getResources(), R.drawable.carreterajuego);
         nenufar = BitmapFactory.decodeResource(getResources(), R.drawable.nenufar);
+        muerte = BitmapFactory.decodeResource(getResources(), R.drawable.muerte);
 
         troncoLargo = BitmapFactory.decodeResource(getResources(), R.drawable.troncolargo);
         troncoCorto = BitmapFactory.decodeResource(getResources(), R.drawable.troncopequenyo);
@@ -65,7 +67,6 @@ public class GameView extends SurfaceView {
         camionIz = BitmapFactory.decodeResource(getResources(), R.drawable.camioniz);
         fragonetaIz = BitmapFactory.decodeResource(getResources(), R.drawable.fragonetaiz);
         cocheIz = BitmapFactory.decodeResource(getResources(), R.drawable.cocheiz);
-
 
         holder = getHolder();
 
@@ -252,7 +253,13 @@ public class GameView extends SurfaceView {
                     posicionRanaY >= troncoY3 &&
                     posicionRanaY <= troncoY3 + troncoB3.getHeight())) {
             } else {
-                pierdeVida();
+
+                pierdeVida(canvas);
+            }
+        } else {
+            if (muerto) {
+                muerto = false;
+                pierdeVida(canvas);
             }
         }
 
@@ -394,11 +401,13 @@ public class GameView extends SurfaceView {
         main.finish();
     }
 
-    public void pierdeVida() {
+    public void pierdeVida(Canvas canvas) {
         vidas--;
+        int posicionMuerteX = posicionRanaX, posicionMuerteY = posicionRanaY;
         posicionRanaX = tamanoX / 2;
         posicionRanaY = (tamanoY * 9) / 10;
         main.cont = 9;
+        canvas.drawBitmap(muerte, posicionMuerteX, posicionMuerteY, null);
         if (vidas >= 0) {
             limit = 41;
         } else {
@@ -406,6 +415,8 @@ public class GameView extends SurfaceView {
             gameOver();
         }
     }
+
+
 
     public void printFinish() {
 
