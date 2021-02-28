@@ -75,7 +75,10 @@ public class GameView extends SurfaceView {
         if (pasada) {
 
             //Troncos
-            aleatorio = (int) (Math.random() * 2);
+            do{
+                aleatorio = (int) (Math.random() * 3);
+            } while (aleatorio == 3);
+
 
             switch (aleatorio) {
                 case 0:
@@ -88,7 +91,9 @@ public class GameView extends SurfaceView {
                     troncoB1 = troncoLargo;
             }
 
-            aleatorio = (int) (Math.random() * 2);
+            do{
+                aleatorio = (int) (Math.random() * 3);
+            } while (aleatorio == 3);
 
             switch (aleatorio) {
                 case 0:
@@ -101,7 +106,9 @@ public class GameView extends SurfaceView {
                     troncoB2 = troncoLargo;
             }
 
-            aleatorio = (int) (Math.random() * 2);
+            do{
+                aleatorio = (int) (Math.random() * 3);
+            } while (aleatorio == 3);
 
             switch (aleatorio) {
                 case 0:
@@ -116,7 +123,9 @@ public class GameView extends SurfaceView {
 
             //Coches
 
-            aleatorio = (int) (Math.random() * 2);
+            do{
+                aleatorio = (int) (Math.random() * 3);
+            } while (aleatorio == 3);
 
             switch (aleatorio) {
                 case 0:
@@ -129,7 +138,9 @@ public class GameView extends SurfaceView {
                     vehiculoB1 = coche;
             }
 
-            aleatorio = (int) (Math.random() * 2);
+            do{
+                aleatorio = (int) (Math.random() * 3);
+            } while (aleatorio == 3);
 
             switch (aleatorio) {
                 case 0:
@@ -142,7 +153,9 @@ public class GameView extends SurfaceView {
                     vehiculoB2 = cocheIz;
             }
 
-            aleatorio = (int) (Math.random() * 2);
+            do{
+                aleatorio = (int) (Math.random() * 3);
+            } while (aleatorio == 3);
 
             switch (aleatorio) {
                 case 0:
@@ -176,7 +189,6 @@ public class GameView extends SurfaceView {
             @Override
             public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
                 boolean retry = true;
-                gameOver();
                 while (retry) {
                     try {
                         gameLoopThread.join();
@@ -227,7 +239,8 @@ public class GameView extends SurfaceView {
             }
         }
 
-        if (posicionRanaY > 0 && posicionRanaY < nenufar.getHeight()*3) {
+        //Morir en agua cuando hay tronco
+        if (posicionRanaY > 0 && posicionRanaY < nenufar.getHeight() * 3) {
             if ((posicionRanaX + rana.getWidth() >= troncoX1 &&
                     posicionRanaX <= troncoX1 + troncoB1.getWidth() &&
                     posicionRanaY >= troncoY1 &&
@@ -322,17 +335,19 @@ public class GameView extends SurfaceView {
     public void temporizador(Canvas canvas) {
         TextView text = new TextView(getContext());
         text.setText("Vidas " + vidas + " - " + "Tiempo " + limit);
-        text.setTextSize(25);
+        text.setTextSize(15);
 
         Paint paintText = text.getPaint();
 
         Rect boundsText = new Rect();
 
+
         paintText.getTextBounds(text.getText().toString(), 0, text.length(), boundsText);
-        paintText.setTextAlign(Paint.Align.RIGHT);
+        paintText.setTextAlign(Paint.Align.CENTER);
         paintText.setColor(Color.BLACK);
 
-        canvas.drawText(text.getText().toString(), boundsText.width(), 100, paintText);
+
+        canvas.drawText(text.getText().toString(), getWidth()/2, getHeight()-boundsText.height()/2, paintText);
     }
 
     public void movimientoObstaculos(int medidor, int dibujoY, Canvas canvas) {
@@ -371,21 +386,28 @@ public class GameView extends SurfaceView {
     }
 
     public void gameOver() {
+        limit = 0;
+        vidas = 0;
         Intent nextActivityIntent = new Intent(main.getApplicationContext(), ReiniciarActivity.class);
-        main.startActivity(nextActivityIntent);
         gameLoopThread.setRunning(false);
-        tiempoThread.setRunning(false);
+        main.startActivity(nextActivityIntent);
         main.finish();
     }
 
     public void pierdeVida() {
         vidas--;
-        if (!(vidas >= 0)) {
+        posicionRanaX = tamanoX / 2;
+        posicionRanaY = (tamanoY * 9) / 10;
+        main.cont = 9;
+        if (vidas >= 0) {
+            limit = 41;
+        } else {
+            tiempoThread.setRunning(false);
             gameOver();
         }
-        limit = 40;
-        posicionRanaX = tamanoX/2;
-        posicionRanaY = (tamanoY*9)/10;
-        main.cont = 9;
+    }
+
+    public void printFinish() {
+
     }
 }

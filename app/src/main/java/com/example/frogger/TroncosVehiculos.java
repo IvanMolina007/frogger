@@ -43,7 +43,9 @@ public class TroncosVehiculos extends Thread {
                         view.troncoX1--;
 
                         if (view.troncoX1 + view.troncoB1.getWidth() < 0) {
-                            aleatoriolo = (int) (Math.random() * 2);
+                            do{
+                                aleatoriolo = (int) (Math.random() * 3);
+                            } while (aleatoriolo == 3);
 
                             switch (aleatoriolo) {
                                 case 0:
@@ -64,7 +66,9 @@ public class TroncosVehiculos extends Thread {
 
                         if (view.troncoX2 == view.tamanoX) {
 
-                            aleatoriolo = (int) (Math.random() * 2);
+                            do{
+                                aleatoriolo = (int) (Math.random() * 3);
+                            } while (aleatoriolo == 3);
 
                             switch (aleatoriolo) {
                                 case 0:
@@ -86,7 +90,9 @@ public class TroncosVehiculos extends Thread {
 
                         if (view.troncoX3 + view.troncoB3.getWidth() < 0) {
 
-                            aleatoriolo = (int) (Math.random() * 2);
+                            do{
+                                aleatoriolo = (int) (Math.random() * 3);
+                            } while (aleatoriolo == 3);
 
                             switch (aleatoriolo) {
                                 case 0:
@@ -113,7 +119,9 @@ public class TroncosVehiculos extends Thread {
 
                         if (view.vehiculoX1 == view.tamanoX) {
 
-                            aleatoriolo = (int) (Math.random() * 2);
+                            do{
+                                aleatoriolo = (int) (Math.random() * 3);
+                            } while (aleatoriolo == 3);
 
                             switch (aleatoriolo) {
                                 case 0:
@@ -142,7 +150,9 @@ public class TroncosVehiculos extends Thread {
 
                         if (view.vehiculoX2 + view.vehiculoB2.getWidth() < 0) {
 
-                            aleatoriolo = (int) (Math.random() * 2);
+                            do{
+                                aleatoriolo = (int) (Math.random() * 3);
+                            } while (aleatoriolo == 3);
 
                             switch (aleatoriolo) {
                                 case 0:
@@ -169,7 +179,9 @@ public class TroncosVehiculos extends Thread {
 
                         if (view.vehiculoX3 == view.tamanoX) {
 
-                            aleatoriolo = (int) (Math.random() * 2);
+                            do{
+                                aleatoriolo = (int) (Math.random() * 3);
+                            } while (aleatoriolo == 3);
 
                             switch (aleatoriolo) {
                                 case 0:

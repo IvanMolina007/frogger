@@ -22,15 +22,7 @@ public class TiempoThread extends Thread {
             try {
                 view.limit--;
                 if (view.limit == 0) {
-                    view.vidas--;
-                    view.posicionRanaX = view.tamanoX / 2;
-                    view.posicionRanaY = (view.tamanoY * 9) / 10;
-                    main.cont = 9;
-                    if (view.vidas >= 0) {
-                        view.limit = 40;
-                    } else {
-                        view.gameOver();
-                    }
+                    view.pierdeVida();
                 }
                 sleep(1000);
             } catch (Exception e) {
