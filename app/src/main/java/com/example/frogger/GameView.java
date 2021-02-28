@@ -227,16 +227,17 @@ public class GameView extends SurfaceView {
             }
         }
 
-        if (posicionRanaY > nenufar.getHeight() && posicionRanaY < nenufar.getHeight()*3) {
+        if (posicionRanaY > 0 && posicionRanaY < nenufar.getHeight()*3) {
             if ((posicionRanaX + rana.getWidth() >= troncoX1 &&
                     posicionRanaX <= troncoX1 + troncoB1.getWidth() &&
                     posicionRanaY >= troncoY1 &&
                     posicionRanaY <= troncoY1 + troncoB1.getHeight()) || (posicionRanaX + rana.getWidth() >= troncoX2 &&
                     posicionRanaX <= troncoX2 + troncoB2.getWidth() &&
                     posicionRanaY >= troncoY2 &&
-                    posicionRanaY <= troncoY2 + troncoB2.getHeight())) {
-
-
+                    posicionRanaY <= troncoY2 + troncoB2.getHeight()) || (posicionRanaX + rana.getWidth() >= troncoX3 &&
+                    posicionRanaX <= troncoX3 + troncoB3.getWidth() &&
+                    posicionRanaY >= troncoY3 &&
+                    posicionRanaY <= troncoY3 + troncoB3.getHeight())) {
             } else {
                 pierdeVida();
             }
