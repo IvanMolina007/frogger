@@ -22,6 +22,7 @@ public class TiempoThread extends Thread {
             try {
                 view.limit--;
                 if (view.limit == 0) {
+                    view.sp.play(view.tiempo, 1,  1, 1, 0, 1);
                     view.muerto = true;
                 }
                 sleep(1000);

@@ -9,6 +9,9 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.TextView;
@@ -26,12 +29,15 @@ import com.google.firebase.database.ValueEventListener;
 public class GameView extends SurfaceView {
 
     public MainActivity main;
-    public boolean muerto = false, borrado = false;
+    public boolean muerto = false, borrado = false, musica = false, atropellado = false;
+    private MediaPlayer media;
+    public SoundPool sp = new SoundPool(9, AudioManager.STREAM_MUSIC, 0);
     int tamanoX, tamanoY, posicionRanaX, posicionRanaY;
+    public int ahogado, atropello, tiempo, salto, puntuar, passLevel;
     public int vidas = 2, troncoX1, troncoX2, troncoX3,
             vehiculoX1, vehiculoX2, vehiculoX3, aleatorio,
             troncoY1, troncoY2, troncoY3, vehiculoY1, vehiculoY2, vehiculoY3, dificultad = 1;
-    boolean nenufar1 = true, nenufar2 = true, nenufar3 = true, nenufar4 = true, nenufar5 = true;
+    boolean nenufar1 = true, nenufar2 = true, nenufar3 = true, nenufar4 = true, nenufar5 = true, volver = true;
     public GameLoopThread gameLoopThread;
     DatabaseReference database;
     private SurfaceHolder holder;
@@ -52,8 +58,11 @@ public class GameView extends SurfaceView {
 
     boolean pasada = true;
 
-    public GameView(Context context, Point pantalla, MainActivity main) {
+    public GameView(Context context, Point pantalla, final MainActivity main) {
         super(context);
+
+        media = MediaPlayer.create(getContext(), R.raw.frogger);
+        media.setVolume(1, 1);
 
         gameLoopThread = new GameLoopThread(this);
         this.main = main;
@@ -200,18 +209,18 @@ public class GameView extends SurfaceView {
             @Override
             public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
 
-                /*boolean retry = true;
-                while (retry) {
-                    try {
-                        gameLoopThread.join();
-                        retry = false;
-                    } catch (InterruptedException e) {
-                    }
-                }*/
+                media.pause();
+                if (volver) {
+                    Intent nextActivityIntent = new Intent(main.getApplicationContext(), ReiniciarActivity.class);
+                    main.startActivity(nextActivityIntent);
+                    main.finish();
+                }
             }
 
             @Override
             public void surfaceCreated(@NonNull SurfaceHolder holder) {
+
+
                 tiempoThread.setRunning(true);
                 tiempoThread.start();
 
@@ -231,6 +240,13 @@ public class GameView extends SurfaceView {
 
                 gameLoopThread.setRunning(true);
                 gameLoopThread.start();
+
+                ahogado = sp.load(getContext(), R.raw.aguasonido, 0);
+                salto = sp.load(getContext(), R.raw.salto, 0);
+                puntuar = sp.load(getContext(), R.raw.rananenufar, 0);
+                atropello = sp.load(getContext(), R.raw.claxon, 0);
+                tiempo = sp.load(getContext(), R.raw.muertesound, 0);
+                passLevel = sp.load(getContext(), R.raw.megavictoria, 0);
             }
 
             @Override
@@ -240,6 +256,11 @@ public class GameView extends SurfaceView {
 
     @Override
     protected void onDraw(Canvas canvas) {
+        if (!musica) {
+            media.start();
+            media.setLooping(true);
+            musica = true;
+        }
         if (canvas != null) {
             dibujarCampo(canvas);
 
@@ -271,12 +292,17 @@ public class GameView extends SurfaceView {
                     posicionRanaX = (int)(posicionRanaX + dificultad * 7.5);
 
                 } else {
+                    sp.play(ahogado, 1,  1, 1, 0, 1);
                     pierdeVida(canvas);
                 }
             } else {
                 if (muerto) {
                     muerto = false;
                     pierdeVida(canvas);
+                    if (atropellado) {
+                        atropellado = false;
+                        sp.play(atropello, 1,  1, 1, 0, 1);
+                    }
                 }
             }
             //Llegas a los nenufares y comprueba si ya llegaste
@@ -318,6 +344,7 @@ public class GameView extends SurfaceView {
                 nenufar5 = true;
                 vidas++;
                 dificultad++;
+                sp.play(passLevel, 1,  1, 1, 0, 1);
                 puntos = puntos + 5;
             }
 
@@ -420,8 +447,6 @@ public class GameView extends SurfaceView {
 
     public void movimientoObstaculos(int medidor, int dibujoY, Canvas canvas) {
 
-        //poner random para bitmap
-
         switch (medidor) {
             case 1:
                 troncoY1 = dibujoY;
@@ -456,6 +481,7 @@ public class GameView extends SurfaceView {
     public void gameOver() {
         limit = 0;
         vidas = 0;
+        volver = false;
         borrado = false;
         Intent nextActivityIntent = new Intent(main.getApplicationContext(), ReiniciarActivity.class);
         gameLoopThread.setRunning(false);
@@ -517,7 +543,9 @@ public class GameView extends SurfaceView {
                             limit = limit + 21;
                             nenufar1 = false;
                             puntos = puntos + 1;
+                            sp.play(puntuar, 1,  1, 1, 0, 1);
                         } else {
+                            sp.play(tiempo, 1,  1, 1, 0, 1);
                             pierdeVida(canvas);
                         }
                     }
@@ -533,7 +561,9 @@ public class GameView extends SurfaceView {
                             limit = limit + 21;
                             nenufar2 = false;
                             puntos = puntos + 1;
+                            sp.play(puntuar, 1,  1, 1, 0, 1);
                         } else {
+                            sp.play(tiempo, 1,  1, 1, 0, 1);
                             pierdeVida(canvas);
                         }
                     }
@@ -549,7 +579,9 @@ public class GameView extends SurfaceView {
                             limit = limit + 21;
                             nenufar3 = false;
                             puntos = puntos + 1;
+                            sp.play(puntuar, 1,  1, 1, 0, 1);
                         } else {
+                            sp.play(tiempo, 1,  1, 1, 0, 1);
                             pierdeVida(canvas);
                         }
                     }
@@ -564,7 +596,9 @@ public class GameView extends SurfaceView {
                             limit = limit + 21;
                             nenufar4 = false;
                             puntos = puntos + 1;
+                            sp.play(puntuar, 1,  1, 1, 0, 1);
                         } else {
+                            sp.play(tiempo, 1,  1, 1, 0, 1);
                             pierdeVida(canvas);
                         }
                     }
@@ -579,7 +613,9 @@ public class GameView extends SurfaceView {
                             limit = limit + 21;
                             nenufar5 = false;
                             puntos = puntos + 1;
+                            sp.play(puntuar, 1,  1, 1, 0, 1);
                         } else {
+                            sp.play(tiempo, 1,  1, 1, 0, 1);
                             pierdeVida(canvas);
                         }
                     }

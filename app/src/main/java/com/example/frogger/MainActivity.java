@@ -82,11 +82,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             if (y <= pantalla.y / 2) {
                 if (cont >= 1) {
+                    view.sp.play(view.salto, 1,  1, 1, 0, 1);
                     cont--;
                     view.setY(true, cont);
                 }
             } else {
                 if (cont <= 8) {
+                    view.sp.play(view.salto, 1,  1, 1, 0, 1);
                     cont++;
                     view.setY(false, cont);
                 }

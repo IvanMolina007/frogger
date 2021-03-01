@@ -40,9 +40,9 @@ public class TroncosVehiculos extends Thread {
             try {
                 switch (troncoXDependencia) {
                     case 1:
-                        view.troncoX1--;
+                        view.troncoX1 = view.troncoX1 - view.dificultad;
 
-                        if (view.troncoX1 + view.troncoB1.getWidth() < 0) {
+                        if (view.troncoX1 + view.troncoB1.getWidth() <= 0) {
                             do{
                                 aleatoriolo = (int) (Math.random() * 3);
                             } while (aleatoriolo == 3);
@@ -62,9 +62,9 @@ public class TroncosVehiculos extends Thread {
                         }
                         break;
                     case 2:
-                        view.troncoX2++;
+                        view.troncoX2 = view.troncoX2 + view.dificultad;
 
-                        if (view.troncoX2 == view.tamanoX) {
+                        if (view.troncoX2 >= view.tamanoX) {
 
                             do{
                                 aleatoriolo = (int) (Math.random() * 3);
@@ -86,9 +86,9 @@ public class TroncosVehiculos extends Thread {
                         }
                         break;
                     case 3:
-                        view.troncoX3--;
+                        view.troncoX3 = view.troncoX3 - view.dificultad;
 
-                        if (view.troncoX3 + view.troncoB3.getWidth() < 0) {
+                        if (view.troncoX3 + view.troncoB3.getWidth() <= 0) {
 
                             do{
                                 aleatoriolo = (int) (Math.random() * 3);
@@ -108,16 +108,17 @@ public class TroncosVehiculos extends Thread {
                         }
                         break;
                     case 4:
-                        view.vehiculoX1++;
+                        view.vehiculoX1 = view.vehiculoX1 + view.dificultad;
 
                         if (view.posicionRanaX + view.rana.getWidth() >= view.vehiculoX1 &&
                                 view.posicionRanaX <= view.vehiculoX1 + view.vehiculoB1.getWidth() &&
                                 view.posicionRanaY >= view.vehiculoY1 &&
                                 view.posicionRanaY <= view.vehiculoY1 + view.vehiculoB1.getHeight()) {
                             view.muerto = true;
+                            view.atropellado = true;
                         }
 
-                        if (view.vehiculoX1 == view.tamanoX) {
+                        if (view.vehiculoX1 >= view.tamanoX) {
 
                             do{
                                 aleatoriolo = (int) (Math.random() * 3);
@@ -139,16 +140,17 @@ public class TroncosVehiculos extends Thread {
                         }
                         break;
                     case 5:
-                        view.vehiculoX2--;
+                        view.vehiculoX2 = view.vehiculoX2 - view.dificultad;
 
                         if (view.posicionRanaX + view.rana.getWidth() >= view.vehiculoX2 &&
                                 view.posicionRanaX <= view.vehiculoX2 + view.vehiculoB2.getWidth() &&
                                 view.posicionRanaY >= view.vehiculoY2 &&
                                 view.posicionRanaY <= view.vehiculoY2 + view.vehiculoB2.getHeight()) {
                             view.muerto = true;
+                            view.atropellado = true;
                         }
 
-                        if (view.vehiculoX2 + view.vehiculoB2.getWidth() < 0) {
+                        if (view.vehiculoX2 + view.vehiculoB2.getWidth() <= 0) {
 
                             do{
                                 aleatoriolo = (int) (Math.random() * 3);
@@ -168,16 +170,17 @@ public class TroncosVehiculos extends Thread {
                         }
                         break;
                     case 6:
-                        view.vehiculoX3++;
+                        view.vehiculoX3 = view.vehiculoX3 + view.dificultad;
 
                         if (view.posicionRanaX + view.rana.getWidth() >= view.vehiculoX3 &&
                                 view.posicionRanaX <= view.vehiculoX3 + view.vehiculoB3.getWidth() &&
                                 view.posicionRanaY >= view.vehiculoY3 &&
                                 view.posicionRanaY <= view.vehiculoY3 + view.vehiculoB3.getHeight()) {
                             view.muerto = true;
+                            view.atropellado = true;
                         }
 
-                        if (view.vehiculoX3 == view.tamanoX) {
+                        if (view.vehiculoX3 >= view.tamanoX) {
 
                             do{
                                 aleatoriolo = (int) (Math.random() * 3);
