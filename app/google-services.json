@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "246283493985",
+    "project_id": "frogger-a73a9",
+    "storage_bucket": "frogger-a73a9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:246283493985:android:e986d55083fb72c4f58020",
+        "android_client_info": {
+          "package_name": "com.example.frogger"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "246283493985-hghirk5g5cf3vs5s78gbq92ikob0uo46.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.frogger",
+            "certificate_hash": "dd6ce2ac3d31a9fc32d75780570773168f10ccec"
+          }
+        },
+        {
+          "client_id": "246283493985-bbg73q6dr7lndgrqgkosjv1p564qddi4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByyxC98VQik93TajRxORI8fwUXWsWXL_4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "246283493985-bbg73q6dr7lndgrqgkosjv1p564qddi4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

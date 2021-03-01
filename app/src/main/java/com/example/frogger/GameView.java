@@ -15,21 +15,30 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.example.frogger.model.Usuario;
 import com.example.frogger.restart.ReiniciarActivity;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class GameView extends SurfaceView {
 
     public MainActivity main;
-    public boolean muerto = false;
+    public boolean muerto = false, borrado = false;
     int tamanoX, tamanoY, posicionRanaX, posicionRanaY;
     public int vidas = 2, troncoX1, troncoX2, troncoX3,
             vehiculoX1, vehiculoX2, vehiculoX3, aleatorio,
-            troncoY1, troncoY2, troncoY3, vehiculoY1, vehiculoY2, vehiculoY3;
+            troncoY1, troncoY2, troncoY3, vehiculoY1, vehiculoY2, vehiculoY3, dificultad = 1;
+    boolean nenufar1 = true, nenufar2 = true, nenufar3 = true, nenufar4 = true, nenufar5 = true;
     public GameLoopThread gameLoopThread;
+    DatabaseReference database;
     private SurfaceHolder holder;
+    public int puntos = 0;
     private Bitmap agua, cesped, carretera, muerte;
     public Bitmap nenufar, rana, troncoB1, troncoB2, troncoB3, troncoLargo, troncoCorto, troncoMedio,
-            vehiculoB1, vehiculoB2, vehiculoB3, camion, fragoneta, coche, camionIz, fragonetaIz, cocheIz;
+            vehiculoB1, vehiculoB2, vehiculoB3, camion, fragoneta, coche, camionIz, fragonetaIz, cocheIz, ranaFin;
 
     public long limit = 41;
 
@@ -55,6 +64,7 @@ public class GameView extends SurfaceView {
         carretera = BitmapFactory.decodeResource(getResources(), R.drawable.carreterajuego);
         nenufar = BitmapFactory.decodeResource(getResources(), R.drawable.nenufar);
         muerte = BitmapFactory.decodeResource(getResources(), R.drawable.muerte);
+        ranaFin = BitmapFactory.decodeResource(getResources(), R.drawable.ranaunodown);
 
         troncoLargo = BitmapFactory.decodeResource(getResources(), R.drawable.troncolargo);
         troncoCorto = BitmapFactory.decodeResource(getResources(), R.drawable.troncopequenyo);
@@ -76,7 +86,7 @@ public class GameView extends SurfaceView {
         if (pasada) {
 
             //Troncos
-            do{
+            do {
                 aleatorio = (int) (Math.random() * 3);
             } while (aleatorio == 3);
 
@@ -92,7 +102,7 @@ public class GameView extends SurfaceView {
                     troncoB1 = troncoLargo;
             }
 
-            do{
+            do {
                 aleatorio = (int) (Math.random() * 3);
             } while (aleatorio == 3);
 
@@ -107,7 +117,7 @@ public class GameView extends SurfaceView {
                     troncoB2 = troncoLargo;
             }
 
-            do{
+            do {
                 aleatorio = (int) (Math.random() * 3);
             } while (aleatorio == 3);
 
@@ -124,7 +134,7 @@ public class GameView extends SurfaceView {
 
             //Coches
 
-            do{
+            do {
                 aleatorio = (int) (Math.random() * 3);
             } while (aleatorio == 3);
 
@@ -139,7 +149,7 @@ public class GameView extends SurfaceView {
                     vehiculoB1 = coche;
             }
 
-            do{
+            do {
                 aleatorio = (int) (Math.random() * 3);
             } while (aleatorio == 3);
 
@@ -154,7 +164,7 @@ public class GameView extends SurfaceView {
                     vehiculoB2 = cocheIz;
             }
 
-            do{
+            do {
                 aleatorio = (int) (Math.random() * 3);
             } while (aleatorio == 3);
 
@@ -189,14 +199,15 @@ public class GameView extends SurfaceView {
 
             @Override
             public void surfaceDestroyed(@NonNull SurfaceHolder holder) {
-                boolean retry = true;
+
+                /*boolean retry = true;
                 while (retry) {
                     try {
                         gameLoopThread.join();
                         retry = false;
                     } catch (InterruptedException e) {
                     }
-                }
+                }*/
             }
 
             @Override
@@ -223,48 +234,98 @@ public class GameView extends SurfaceView {
             }
 
             @Override
-            public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {
-            }
+            public void surfaceChanged(@NonNull SurfaceHolder holder, int format, int width, int height) {}
         });
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        dibujarCampo(canvas);
+        if (canvas != null) {
+            dibujarCampo(canvas);
 
-        if (posicionRanaX < 0) {
-            posicionRanaX = 0;
-        } else {
-            if (posicionRanaX + rana.getWidth() > tamanoX) {
-                posicionRanaX = tamanoX - rana.getWidth();
-            }
-        }
-
-        //Morir en agua cuando hay tronco
-        if (posicionRanaY > 0 && posicionRanaY < nenufar.getHeight() * 3) {
-            if ((posicionRanaX + rana.getWidth() >= troncoX1 &&
-                    posicionRanaX <= troncoX1 + troncoB1.getWidth() &&
-                    posicionRanaY >= troncoY1 &&
-                    posicionRanaY <= troncoY1 + troncoB1.getHeight()) || (posicionRanaX + rana.getWidth() >= troncoX2 &&
-                    posicionRanaX <= troncoX2 + troncoB2.getWidth() &&
-                    posicionRanaY >= troncoY2 &&
-                    posicionRanaY <= troncoY2 + troncoB2.getHeight()) || (posicionRanaX + rana.getWidth() >= troncoX3 &&
-                    posicionRanaX <= troncoX3 + troncoB3.getWidth() &&
-                    posicionRanaY >= troncoY3 &&
-                    posicionRanaY <= troncoY3 + troncoB3.getHeight())) {
+            if (posicionRanaX < 0) {
+                posicionRanaX = 0;
             } else {
+                if (posicionRanaX + rana.getWidth() > tamanoX) {
+                    posicionRanaX = tamanoX - rana.getWidth();
+                }
+            }
 
-                pierdeVida(canvas);
+            //Morir en agua cuando hay tronco
+            if (posicionRanaY > 0 && posicionRanaY < nenufar.getHeight() * 3) {
+                if ((posicionRanaX + rana.getWidth() >= troncoX1 &&
+                        posicionRanaX <= troncoX1 + troncoB1.getWidth() &&
+                        posicionRanaY >= troncoY1 &&
+                        posicionRanaY <= troncoY1 + troncoB1.getHeight()) || (posicionRanaX + rana.getWidth() >= troncoX3 &&
+                        posicionRanaX <= troncoX3 + troncoB3.getWidth() &&
+                        posicionRanaY >= troncoY3 &&
+                        posicionRanaY <= troncoY3 + troncoB3.getHeight())) {
+
+                    posicionRanaX = (int)(posicionRanaX - dificultad * 7.5);
+
+                } else if ((posicionRanaX + rana.getWidth() >= troncoX2 &&
+                        posicionRanaX <= troncoX2 + troncoB2.getWidth() &&
+                        posicionRanaY >= troncoY2 &&
+                        posicionRanaY <= troncoY2 + troncoB2.getHeight()) ){
+
+                    posicionRanaX = (int)(posicionRanaX + dificultad * 7.5);
+
+                } else {
+                    pierdeVida(canvas);
+                }
+            } else {
+                if (muerto) {
+                    muerto = false;
+                    pierdeVida(canvas);
+                }
             }
-        } else {
-            if (muerto) {
-                muerto = false;
-                pierdeVida(canvas);
+            //Llegas a los nenufares y comprueba si ya llegaste
+
+            if (!nenufar1) {
+                canvas.drawBitmap(ranaFin, 30, 70, null);
             }
+
+            nenufares(canvas, 1);
+
+            if (!nenufar2) {
+                canvas.drawBitmap(ranaFin, nenufar.getWidth() + 30, 70, null);
+            }
+
+            nenufares(canvas, 2);
+
+            if (!nenufar3) {
+                canvas.drawBitmap(ranaFin, nenufar.getWidth() * 2 + 30, 70, null);
+            }
+            nenufares(canvas, 3);
+
+            if (!nenufar4) {
+                canvas.drawBitmap(ranaFin, nenufar.getWidth() * 3 + 30, 70, null);
+            }
+
+            nenufares(canvas, 4);
+
+            if (!nenufar5) {
+                canvas.drawBitmap(ranaFin, nenufar.getWidth() * 4 + 30, 70, null);
+            }
+
+            nenufares(canvas, 5);
+
+            if (!nenufar1 && !nenufar2 && !nenufar3 && !nenufar4 && !nenufar5) {
+                nenufar1 = true;
+                nenufar2 = true;
+                nenufar3 = true;
+                nenufar4 = true;
+                nenufar5 = true;
+                vidas++;
+                dificultad++;
+                puntos = puntos + 5;
+            }
+
+
+            canvas.drawBitmap(rana, posicionRanaX, posicionRanaY + 20, null);
+            temporizador(canvas);
         }
 
-        canvas.drawBitmap(rana, posicionRanaX, posicionRanaY + 20, null);
-        temporizador(canvas);
     }
 
     public void setX(float x) {
@@ -341,7 +402,7 @@ public class GameView extends SurfaceView {
 
     public void temporizador(Canvas canvas) {
         TextView text = new TextView(getContext());
-        text.setText("Vidas " + vidas + " - " + "Tiempo " + limit);
+        text.setText("Vidas " + vidas + " - Tiempo " + limit + " - Puntos " + puntos);
         text.setTextSize(15);
 
         Paint paintText = text.getPaint();
@@ -354,7 +415,7 @@ public class GameView extends SurfaceView {
         paintText.setColor(Color.BLACK);
 
 
-        canvas.drawText(text.getText().toString(), getWidth()/2, getHeight()-boundsText.height()/2, paintText);
+        canvas.drawText(text.getText().toString(), getWidth() / 2, getHeight() - boundsText.height() / 2, paintText);
     }
 
     public void movimientoObstaculos(int medidor, int dibujoY, Canvas canvas) {
@@ -395,8 +456,35 @@ public class GameView extends SurfaceView {
     public void gameOver() {
         limit = 0;
         vidas = 0;
+        borrado = false;
         Intent nextActivityIntent = new Intent(main.getApplicationContext(), ReiniciarActivity.class);
         gameLoopThread.setRunning(false);
+        tiempoThread.setRunning(false);
+        //Subos
+        database = FirebaseDatabase.getInstance().getReference().child("usuarios");
+        database.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (!borrado) {
+                    for (DataSnapshot child: snapshot.getChildren()) {
+                        if (child.child("nombre").getValue().toString().equals(ReiniciarActivity.nombreJugador)) {
+                            Usuario newU = child.getValue(Usuario.class);
+                            newU.setPuntos(puntos);
+                            database = FirebaseDatabase.getInstance().getReference().child("usuarios").child(child.getKey());
+                            borrado = true;
+                            database.removeValue();
+                            database = FirebaseDatabase.getInstance().getReference().child("usuarios").child(child.getKey());
+                            database.setValue(newU);
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         main.startActivity(nextActivityIntent);
         main.finish();
     }
@@ -416,9 +504,87 @@ public class GameView extends SurfaceView {
         }
     }
 
+    public void nenufares(Canvas canvas, int numeroNenufar) {
+        if (posicionRanaY > -20 && posicionRanaY < nenufar.getHeight() - 20) {
+            switch (numeroNenufar) {
+                case 1:
 
+                    if (posicionRanaX > 0 && posicionRanaX < nenufar.getWidth()) {
+                        if (nenufar1) {
+                            posicionRanaX = tamanoX / 2;
+                            posicionRanaY = (tamanoY * 9) / 10;
+                            main.cont = 9;
+                            limit = limit + 21;
+                            nenufar1 = false;
+                            puntos = puntos + 1;
+                        } else {
+                            pierdeVida(canvas);
+                        }
+                    }
 
-    public void printFinish() {
+                    break;
+                case 2:
 
+                    if (posicionRanaX > nenufar.getWidth() && posicionRanaX < nenufar.getWidth()*2) {
+                        if (nenufar2) {
+                            posicionRanaX = tamanoX / 2;
+                            posicionRanaY = (tamanoY * 9) / 10;
+                            main.cont = 9;
+                            limit = limit + 21;
+                            nenufar2 = false;
+                            puntos = puntos + 1;
+                        } else {
+                            pierdeVida(canvas);
+                        }
+                    }
+
+                    break;
+                case 3:
+
+                    if (posicionRanaX > nenufar.getWidth()*2 && posicionRanaX < nenufar.getWidth()*3) {
+                        if (nenufar3) {
+                            posicionRanaX = tamanoX / 2;
+                            posicionRanaY = (tamanoY * 9) / 10;
+                            main.cont = 9;
+                            limit = limit + 21;
+                            nenufar3 = false;
+                            puntos = puntos + 1;
+                        } else {
+                            pierdeVida(canvas);
+                        }
+                    }
+                    break;
+                case 4:
+
+                    if (posicionRanaX > nenufar.getWidth()*3 && posicionRanaX < nenufar.getWidth()*4) {
+                        if (nenufar4) {
+                            posicionRanaX = tamanoX / 2;
+                            posicionRanaY = (tamanoY * 9) / 10;
+                            main.cont = 9;
+                            limit = limit + 21;
+                            nenufar4 = false;
+                            puntos = puntos + 1;
+                        } else {
+                            pierdeVida(canvas);
+                        }
+                    }
+                    break;
+                case 5:
+
+                    if (posicionRanaX > nenufar.getWidth()*4 && posicionRanaX < nenufar.getWidth()*5) {
+                        if (nenufar5) {
+                            posicionRanaX = tamanoX / 2;
+                            posicionRanaY = (tamanoY * 9) / 10;
+                            main.cont = 9;
+                            limit = limit + 21;
+                            nenufar5 = false;
+                            puntos = puntos + 1;
+                        } else {
+                            pierdeVida(canvas);
+                        }
+                    }
+                    break;
+            }
+        }
     }
 }
