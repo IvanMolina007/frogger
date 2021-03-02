@@ -261,6 +261,7 @@ public class GameView extends SurfaceView {
             media.setLooping(true);
             musica = true;
         }
+
         if (canvas != null) {
             dibujarCampo(canvas);
 
@@ -283,17 +284,18 @@ public class GameView extends SurfaceView {
                         posicionRanaY <= troncoY3 + troncoB3.getHeight())) {
 
                     posicionRanaX = (int)(posicionRanaX - dificultad * 7.5);
-
-                } else if ((posicionRanaX + rana.getWidth() >= troncoX2 &&
-                        posicionRanaX <= troncoX2 + troncoB2.getWidth() &&
-                        posicionRanaY >= troncoY2 &&
-                        posicionRanaY <= troncoY2 + troncoB2.getHeight()) ){
-
-                    posicionRanaX = (int)(posicionRanaX + dificultad * 7.5);
-
                 } else {
-                    sp.play(ahogado, 1,  1, 1, 0, 1);
-                    pierdeVida(canvas);
+                    if ((posicionRanaX + rana.getWidth() >= troncoX2 &&
+                            posicionRanaX <= troncoX2 + troncoB2.getWidth() &&
+                            posicionRanaY >= troncoY2 &&
+                            posicionRanaY <= troncoY2 + troncoB2.getHeight()) ){
+
+                        posicionRanaX = (int)(posicionRanaX + dificultad * 7.5);
+
+                    } else {
+                        sp.play(ahogado, 1,  1, 1, 0, 1);
+                        pierdeVida(canvas);
+                    }
                 }
             } else {
                 if (muerto) {
@@ -483,6 +485,7 @@ public class GameView extends SurfaceView {
         vidas = 0;
         volver = false;
         borrado = false;
+        dificultad = 1;
         Intent nextActivityIntent = new Intent(main.getApplicationContext(), ReiniciarActivity.class);
         gameLoopThread.setRunning(false);
         tiempoThread.setRunning(false);
